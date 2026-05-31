@@ -133,6 +133,8 @@ def iter_default_targets():
     Мета-документы в корне (CLAUDE.md, PRD.md) и служебные каталоги
     (_scripts, _notes, _redteam и пр.) НЕ форматируются: первые — это
     инструкции и план, не нормативный текст; вторые лежат вне «Раздел*».
+    README.md внутри каталогов глав — это служебные саммари, не
+    нормативный текст; они также исключаются.
     """
     for dirpath, dirnames, filenames in os.walk(PROJECT_ROOT):
         rel = os.path.relpath(dirpath, PROJECT_ROOT)
@@ -142,7 +144,7 @@ def iter_default_targets():
             dirnames[:] = [d for d in dirnames if d.startswith("Раздел")]
             continue
         for name in filenames:
-            if name.endswith(".md"):
+            if name.endswith(".md") and name != "README.md":
                 yield os.path.join(dirpath, name)
     preamble = os.path.join(PROJECT_ROOT, "Преамбула.md")
     if os.path.exists(preamble):
@@ -156,7 +158,7 @@ def collect_targets(paths):
         if os.path.isdir(path):
             for dirpath, _dirnames, filenames in os.walk(path):
                 for name in sorted(filenames):
-                    if name.endswith(".md"):
+                    if name.endswith(".md") and name != "README.md":
                         targets.append(os.path.join(dirpath, name))
         elif path.endswith(".md"):
             targets.append(path)
